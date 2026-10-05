@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมจำลองอาชีพนักแข่งรถ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;600&display=swap">
+<style>
+:root{--bg:#0b0b0e;--cd:#1a1a1e;--c2:#121215;--tx:#f3f3f3;--mu:#8b9099;--ac:#d90000;--gd:#f5c518;--bd:#2a2a30;--gn:#2ecc71;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f1f1f4;--cd:#fff;--c2:#fafafc;--tx:#14161a;--mu:#5d6470;--bd:#dcdfe5}}
+:root[data-theme="dark"]{--bg:#0b0b0e;--cd:#1a1a1e;--c2:#121215;--tx:#f3f3f3;--mu:#8b9099;--bd:#2a2a30}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 "Chakra Petch","Noto Sans Thai",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+#app{max-width:520px;margin:0 auto;padding:12px 12px 96px}
+h1{font-size:21px;margin:6px 0}h2{font-size:16px;margin:4px 0;letter-spacing:.5px}small{color:var(--mu);font-size:11px}a{cursor:pointer}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:12px;margin:10px 0}
+button{width:100%;padding:12px;margin:5px 0;border:1px solid var(--bd);border-radius:12px;background:var(--cd);color:var(--tx);font:inherit;text-align:left}
+button.p{background:var(--ac);color:#fff;border:0;text-align:center;font-weight:700;letter-spacing:1px}
+button.s{text-align:center;color:var(--mu);font-size:14px}button:disabled{opacity:.4}
+.mu{color:var(--mu);font-size:13px}
+input,select{width:100%;padding:12px;margin-top:6px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.top{display:flex;gap:8px;margin-bottom:8px}.top>*{flex:1;margin:0;display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:12px;background:var(--cd);border:1px solid var(--bd)}.top button{flex:0 0 46px;justify-content:center;width:auto}.top b{color:var(--ac);font-size:17px}
+.hero{background:linear-gradient(160deg,#3a0507,var(--cd) 70%);border:1px solid var(--bd);border-radius:16px;padding:12px;margin:8px 0}
+.row2{display:flex;gap:8px;align-items:center;justify-content:space-between}.chip{padding:5px 10px;border-radius:20px;background:#0006;font-size:12px}.box{padding:5px 10px;border:1px solid var(--bd);border-radius:10px;background:#0007}.box.red{background:var(--ac);border:0;color:#fff}
+.who{display:flex;gap:12px;align-items:center;margin:12px 0}.av{font-size:40px;width:64px;height:64px;display:grid;place-items:center;background:#fff2;border-radius:14px}.big{font-size:22px;font-weight:700}
+.bdg,.hm{display:inline-grid;place-items:center;border-radius:6px;font-size:11px;font-weight:700;color:#fff;padding:2px 5px}
+.prog{display:flex;justify-content:space-between;margin-top:6px;color:var(--mu);font-size:12px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;flex:1}.bar i{display:block;height:100%;background:var(--ac)}
+.sec{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:12px;letter-spacing:3px;margin:14px 0 6px}.sec:before,.sec:after{content:"";flex:1;height:1px;background:var(--bd)}
+.race{display:flex;gap:12px;align-items:center}.race .fg{font-size:44px}
+.r{display:flex;align-items:center;gap:10px;padding:8px;margin:5px 0;background:var(--cd);border-radius:12px;border:1px solid var(--bd)}.r.me{border-color:var(--ac)}
+.rk{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--bd)}.rk.r1{background:var(--gd);color:#000}.rk.r2{background:#c0c0c0;color:#000}.rk.r3{background:#cd7f32;color:#000}
+.nm{flex:1;min-width:0}.nm span{display:block}.pp{text-align:right}.pp small{display:block}
+.seg{display:flex;gap:6px;background:var(--c2);padding:5px;border-radius:12px;margin:8px 0}.seg button{margin:0;text-align:center;padding:9px 4px;border:0;background:none;color:var(--mu)}.seg button.on{background:var(--ac);color:#fff}
+.nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);background:var(--c2);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}.nav button{margin:0;border:0;border-radius:0;background:none;text-align:center;padding:8px 0;color:var(--mu);font-size:11px}.nav button.on{color:var(--ac)}.nav span{display:block;font-size:20px}
+.sk{display:flex;align-items:center;gap:10px;margin:10px 0}.sk .ic{font-size:26px;width:44px;height:44px;display:grid;place-items:center;background:var(--c2);border-radius:10px}.sk .mid{flex:1}.sk button{width:84px;margin:0;text-align:center;background:var(--ac);color:#fff;border:0;padding:8px 4px}
+.g{display:flex;gap:6px}.g button{text-align:center;padding:9px 4px;font-size:13px}
+.of{border:2px solid var(--bd)}.of.on{border-color:var(--ac)}
+.wh{position:relative;width:min(300px,86vw);margin:16px auto}.wh svg{width:100%;display:block;transition:transform 3.8s cubic-bezier(.12,.7,.1,1)}.pt{position:absolute;top:-8px;left:50%;margin-left:-11px;border:11px solid transparent;border-top:20px solid var(--ac);z-index:2}#res{text-align:center;font-weight:700;min-height:28px;font-size:18px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const T=[
+{n:'Formula 4',b:50,t:[['Prema',66],['ART Grand Prix',64],['Rodin Motorsport',62],['Van Amersfoort',60],['Campos Racing',58],['MP Motorsport',56],['Hitech',54],['Trident',52]]},
+{n:'Formula 3',b:58,t:[['Prema',70],['Trident',68],['ART Grand Prix',67],['Hitech',65],['MP Motorsport',63],['Campos Racing',61],['Rodin Motorsport',59],['Van Amersfoort',57]]},
+{n:'Formula 2',b:66,t:[['Prema',74],['DAMS',72],['Invicta Racing',70],['Hitech',68],['Campos Racing',66],['ART Grand Prix',65],['Trident',62],['Rodin Motorsport',60]]},
+{n:'Formula 1',b:74,t:[['McLaren',90],['Ferrari',86],['Red Bull',85],['Mercedes',83],['Aston Martin',74],['Williams',70],['Alpine',68],['Racing Bulls',66],['Haas',62],['Audi',64],['Cadillac',58]]}
+];
+const RT={Stress:'ความเครียดสะสม',Pressure:'แรงกดดันรอบด้าน',Media:'สื่อรุมจนทนไม่ไหว',Replaced:'ถูกเด็กใหม่มาแทนที่',Injury:'อาการบาดเจ็บ',Family:'อยากอยู่กับครอบครัว',Trauma:'บาดแผลทางใจ'};
+const AK={
+'Mr.Sunday':['เก่งแต่วันแข่ง','good'],'Mr.Saturday':['เก่งแต่รอบควอลิฟาย','neutral'],'Team legend':['ตำนานประจำทีม','good'],'High Ego':['อีโก้สูงปรี๊ด','neutral'],
+'Golden boy':['ลูกรักของวงการ','good'],'The Traitor':['ผู้ทรยศ ย้ายทีมไม่บอกใคร','bad'],'Terrible Driver':['นักขับแย่ (แต่ดันได้แชมป์?)','bad'],'Mr.Potential':['ศักยภาพเยอะ รอวันระเบิด','neutral'],
+'Mr.Monaco':['เจ้าแห่งถนนโมนาโก','good'],'Rain Master':['ราชาสายฝน','good'],'Lap 1 Hero':['ฮีโร่โค้งแรก','neutral'],'Lap 1 Crasher':['ชนตั้งแต่รอบแรก','crash'],
+'Mr.Consistent':['นิ่งที่สุดในกริด','good'],'The Wall':['กำแพงที่ไม่มีใครแซงได้','good'],'The Overtaker':['เจ้าแห่งการแซง','good'],'Tyre Whisperer':['กระซิบกับยางได้','good'],
+'Crash Test':['หุ่นทดสอบการชน','crash'],'Wall Magnet':['แม่เหล็กดูดกำแพง','crash'],'Gravel Tourist':['นักท่องเที่ยวกรวดสนาม','crash'],'Chaos Agent':['ตัวป่วนประจำสนาม','crash'],
+'Pay Driver':['มาพร้อมสปอนเซอร์ก้อนโต','bad'],'Mid Driver':['กลางๆ ทุกด้าน','bad'],'Backmarker':['ขาประจำท้ายตาราง','bad'],'Cursed Driver':['ผีซวยเข้าสิง','bad'],
+'Bottler':['ใจเสาะเวลาสำคัญ','bad'],'Penalty King':['ราชาโดนโทษ','bad'],'Sunday Driver':['ขับสบายๆ เหมือนเดินเล่น','bad'],'Number 2':['นายสอง ตัวรองตลอดกาล','bad'],
+'Lucky Boy':['โชคดีจนน่าหมั่นไส้','neutral'],'Team Radio':['ราชาวิทยุทีม บ่นทุกรอบ','neutral'],'Social Star':['ดังกว่าผลงาน','neutral'],'Drama King':['ราชาดราม่า','neutral'],
+'Late Braker':['เบรกช้าที่สุดในกริด','neutral'],'Hot Head':['หัวร้อนสุดๆ','neutral'],'Fuel Saver':['ราชาประหยัดน้ำมัน','neutral'],'Team Player':['ยอมเสียสละเพื่อทีม','neutral'],
+'Fan Favorite':['ขวัญใจแฟนๆ','good'],'Silent Killer':['เงียบแต่เฉียบ','good'],'Iceman':['ใจเย็นเหมือนน้ำแข็ง','good'],'The Professor':['ศาสตราจารย์แห่งสนาม','good'],
+'Podium Hunter':['นักล่าโพเดียม','good'],'Pole King':['เจ้าโพลโพซิชัน','good'],'Clutch King':['ราชาจังหวะสำคัญ','good'],'Dark Horse':['ม้ามืดแห่งปี','good'],
+'Win Machine':['เครื่องจักรชนะ','win'],'Born Champion':['แชมป์โดยกำเนิด','win'],'The GOAT':['ที่สุดตลอดกาล','win'],'Unstoppable':['ไม่มีใครหยุดได้','win'],
+'Thai Pride':['ความหวังของคนไทย 🇹🇭','thai']
+};
+const DRV={'McLaren':['Lando Norris','Oscar Piastri'],'Ferrari':['Charles Leclerc','Lewis Hamilton'],'Red Bull':['Max Verstappen','Isack Hadjar'],'Mercedes':['George Russell','Kimi Antonelli'],'Aston Martin':['Fernando Alonso','Lance Stroll'],'Williams':['Alex Albon','Carlos Sainz'],'Alpine':['Pierre Gasly','Franco Colapinto'],'Racing Bulls':['Liam Lawson','Arvid Lindblad'],'Haas':['Esteban Ocon','Oliver Bearman'],'Audi':['Nico Hulkenberg','Gabriel Bortoleto'],'Cadillac':['Sergio Perez','Valtteri Bottas']};
+const DR={'Max Verstappen':88,'Lando Norris':84,'Charles Leclerc':84,'Oscar Piastri':83,'George Russell':82,'Lewis Hamilton':81,'Kimi Antonelli':78,'Fernando Alonso':78,'Carlos Sainz':76,'Alex Albon':76,'Pierre Gasly':74,'Esteban Ocon':73,'Oliver Bearman':73,'Nico Hulkenberg':73,'Isack Hadjar':73,'Gabriel Bortoleto':71,'Liam Lawson':72,'Sergio Perez':71,'Valtteri Bottas':70,'Lance Stroll':68,'Arvid Lindblad':70,'Franco Colapinto':69};
+const FN=['Luca','Mateo','Jonas','Kai','Rafael','Theo','Arjun','Hugo','Enzo','Felix','Oskar','Dante','Iker','Tomas','Anton','Ravi','Elias','Marek','Joao','Santi','Niklas','Ivan','Kenji','Bruno','Aron'];
+const LN=['Vance','Moreau','Halvorsen','Castellano','Brandt','Okafor','Lindqvist','Ferraro','Kovac','Duarte','Reinholt','Mizuno','Santoro','Valdez','Petrov','Navarro','Eklund','Barros','Schaefer','Tanaka','Quintero','Marchetti','Dubois','Novak','Ibarra','Fontaine','Wallin','Costa','Sorensen','Varga'];
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CM={good:['สุดยอดมาก! 🔥','แชมป์ชัดๆ 🏆','เจ๋งสุดๆ 👏','ไปต่อให้สุด!'],mid:['สู้ๆ นะ 💪','ปีหน้าต้องได้','ขับดีมาก ❤️','ชอบมาก'],bad:['ปีหน้าเอาใหม่นะ','เบรกบ้างก็ได้ 😂','ฝากทีมปรับรถด้วย','ยังเชียร์อยู่!'],drama:['ดราม่าอีกแล้ว 🍿','แรงมาก 555','ชอบความตรง!']};
+const PO={pic:['📸 โพสต์รูปหลังพิท',()=>R(.02,.06),0],reel:['🎬 ลงรีลวิดีโอ (ลุ้นไวรัล)',()=>Math.random()<.2?R(.3,1):R(.01,.04),0],story:['🤳 สตอรี่ชีวิตประจำวัน',()=>R(.01,.04),0],drama:['🔥 โพสต์แซวคู่แข่ง (เสี่ยง)',()=>Math.random()<.5?R(.1,.3):R(-.1,-.02),0],ad:['🤝 โพสต์โฆษณา (ได้เงินทันที)',()=>R(0,.02),0],boost:['💸 โปรโมตโพสต์ ($50K)',()=>R(.03,.08),5e4]};
+const INV={stock:['📈 หุ้น','เสี่ยงกลาง'],crypto:['🪙 คริปโต','เสี่ยงสูงมาก'],fund:['🏦 กองทุนรวม','ปลอดภัย'],home:['🏠 อสังหาฯ','มั่นคง']};
+const CAP=8e7;
+const hd=()=>'@'+(S.name.toLowerCase().replace(/[^a-z0-9_.]/g,'')||'driver');
+const tw=c=>{const rk=S.rank,fs=S.fs;if(!rk||!fs)return 1;const q=1-2*(rk-1)/(fs-1),k=(c-58)/32;return Math.max(.45,1+2.2*q*(2*k-1))};
+function grow(g){S.fol=Math.max(50,Math.min(CAP,Math.round(S.fol*(1+(g>0?g*(1-S.fol/CAP):g)))))}
+function nm(u){let n;do{n=FN[RI(0,FN.length-1)]+' '+LN[RI(0,LN.length-1)]}while(u.has(n));u.add(n);return n}
+function post(k){
+  const o=PO[k];if(S.posts<=0||S.money<o[2])return;
+  let g=o[1]();if(g>0)g*=!S.rank?1:S.rank<=3?1.3:S.rank>=12?.8:1;
+  const b=S.fol;grow(g);const gain=S.fol-b;S.money-=o[2];
+  if(k=='ad')S.money+=Math.round(S.fol*.4);
+  const q=k=='drama'?CM.drama:!S.rank?CM.mid:S.rank<=3?CM.good:S.rank>=12?CM.bad:CM.mid;
+  S.feed.unshift({t:o[0],likes:Math.round(S.fol*R(.04,.14)),g:gain,v:g>=.3,cm:q[RI(0,q.length-1)]});
+  S.feed=S.feed.slice(0,6);S.posts--;save();render();
+}
+function put(k,p){const a=Math.floor(S.money*p);if(a<=0)return;S.money-=a;S.inv[k]+=a;save();render()}
+function cash(k){S.money+=S.inv[k];S.inv[k]=0;save();render()}
+function buy(k){const i=SH[k];if(S.own[k]||S.money<i[2])return;S.money-=i[2];S.own[k]=1;if(i[3])grow(i[3]);save();render()}
+function igView(){
+  return `<div class="card"><b>${hd()}${S.fol>=1e5?' ✔️':''}</b><br>${esc(S.name)}<br><span class="mu">👥 ${nf(S.fol)} ผู้ติดตาม · โพสต์ที่เหลือปีนี้ ${S.posts}</span></div>
+  <div class="card"><h2>โพสต์อะไรดี</h2>${Object.keys(PO).map(k=>`<button onclick="post('${k}')" ${S.posts<=0||S.money<PO[k][2]?'disabled':''}>${PO[k][0]}</button>`).join('')}</div>
+  <div class="card"><h2>ฟีดล่าสุด</h2>${S.feed.length?S.feed.map(p=>`<div style="margin:8px 0">${p.t}${p.v?' 🚀 ไวรัล!':''}<br><span class="mu">❤️ ${nf(p.likes)} · ผู้ติดตาม ${p.g>=0?'+':'-'}${nf(p.g)} · 💬 “${p.cm}”</span></div>`).join(''):'<span class="mu">ยังไม่มีโพสต์</span>'}</div>`;
+}
+function pickAk(){
+  const nn=(S.res||[]).length||8,dn=(S.res||[]).filter(p=>!p).length,rk=S.rank||9,th=(S.nat||'').startsWith('Thai');
+  let p=Object.keys(AK).filter(k=>k!='Thai Pride'||th);
+  const wt=k=>{const t=AK[k][1];
+    if(t=='win')return rk==1?6:rk<=3?1.5:.15;
+    if(t=='good')return rk<=3?4:rk<=8?1.5:.5;
+    if(t=='bad')return rk>=12?4:rk>=8?1.5:.3;
+    if(t=='crash')return dn/nn>=.2?5:dn/nn>=.07?1.5:.2;
+    if(t=='thai')return 3;return 1};
+  const out=[];
+  while(out.length<12&&p.length){
+    const ws=p.map(wt),tot=ws.reduce((a,b)=>a+b,0);let r=Math.random()*tot,i=0;
+    while(i<p.length-1&&r>=ws[i]){r-=ws[i];i++}
+    out.push(p[i]);p.splice(i,1);
+  }
+  return out;
+}
+function spin(){
+  if(busy)return;busy=1;
+  const key=S.ph.slice(2),w=WH[key],it=typeof w.it=='function'?w.it():w.it,tot=it.reduce((a,x)=>a+x[1],0);
+  let r=Math.random()*tot,i=0;while(r>=it[i][1]){r-=it[i][1];i++}
+  let a=0;for(let j=0;j<i;j++)a+=it[j][1]/tot*360;
+  const sw=it[i][1]/tot*360,mid=a+sw/2;
+  document.getElementById('wh').style.transform=`rotate(${360*6-mid+R(-.35,.35)*sw}deg)`;
+  setTimeout(()=>{
+    const [txt,nx]=w.ap(String(it[i][0]));
+    document.getElementById('res').textContent='🎯 '+txt;
+    setTimeout(()=>go(nx),1400);
+  },4000);
+}
+function wheelSvg(it){
+  const tot=it.reduce((a,x)=>a+x[1],0),n=it.length;let a=0,h='';
+  const P=d=>[100*Math.sin(d*Math.PI/180),-100*Math.cos(d*Math.PI/180)];
+  it.forEach(([l,w],i)=>{
+    const sw=w/tot*360,[x0,y0]=P(a),[x1,y1]=P(a+sw),m=a+sw/2;
+    h+=`<path d="M0 0L${x0} ${y0}A100 100 0 ${sw>180?1:0} 1 ${x1} ${y1}Z" fill="hsl(${i*360/n},62%,46%)" stroke="#fff" stroke-width=".6"/>`;
+    h+=`<text transform="rotate(${m-90})" x="92" y="3" text-anchor="end" fill="#fff" font-size="${Math.max(5,Math.min(n>12?7:n>6?8.5:10,sw))}" font-weight="700">${l}</text>`;
+    a+=sw;
+  });
+  return `<div class="wh"><div class="pt"></div><svg id="wh" viewBox="-102 -102 204 204">${h}</svg></div>`;
+}
+const KEY='racer_career_v4',PTS=[25,18,15,12,10,8,6,4,2,1];
+let S=null,busy=0;
+const R=(a,b)=>a+Math.random()*(b-a),RI=(a,b)=>Math.floor(R(a,b+.999)),cl=x=>Math.max(25,Math.min(99,Math.round(x)));
+const W1=a=>a.map(x=>[x,1]);
+const nf=n=>{n=Math.round(Math.abs(n));return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n)};
+const mf=n=>{const a=Math.abs(n);return a>=1e7?(a/1e6).toFixed(1)+'M':a>=1e5?(a/1e6).toFixed(2)+'M':a>=1e3?Math.round(a/1e3)+'K':String(Math.round(a))};
+const fmt=n=>(n<0?'-':'')+'$'+mf(n);
+const FL={Thai:'🇹🇭',British:'🇬🇧',Italian:'🇮🇹',German:'🇩🇪',French:'🇫🇷',Spanish:'🇪🇸',Dutch:'🇳🇱',Australian:'🇦🇺',Canadian:'🇨🇦',Brazilian:'🇧🇷',Argentine:'🇦🇷',Monegasque:'🇲🇨',Finnish:'🇫🇮',Japanese:'🇯🇵',American:'🇺🇸',Mexican:'🇲🇽',Chinese:'🇨🇳',Indian:'🇮🇳',Swiss:'🇨🇭',Swedish:'🇸🇪',Belgian:'🇧🇪',Austrian:'🇦🇹',Portuguese:'🇵🇹',Danish:'🇩🇰',Malaysian:'🇲🇾',Singaporean:'🇸🇬',Indonesian:'🇮🇩',Vietnamese:'🇻🇳'};
+const FD={'Max Verstappen':'🇳🇱','Lando Norris':'🇬🇧','Charles Leclerc':'🇲🇨','Oscar Piastri':'🇦🇺','George Russell':'🇬🇧','Lewis Hamilton':'🇬🇧','Kimi Antonelli':'🇮🇹','Fernando Alonso':'🇪🇸','Carlos Sainz':'🇪🇸','Alex Albon':'🇹🇭','Pierre Gasly':'🇫🇷','Esteban Ocon':'🇫🇷','Oliver Bearman':'🇬🇧','Nico Hulkenberg':'🇩🇪','Isack Hadjar':'🇫🇷','Gabriel Bortoleto':'🇧🇷','Liam Lawson':'🇳🇿','Sergio Perez':'🇲🇽','Valtteri Bottas':'🇫🇮','Lance Stroll':'🇨🇦','Arvid Lindblad':'🇬🇧','Franco Colapinto':'🇦🇷'};
+const CAL=[['🇦🇺','Australia','Albert Park'],['🇨🇳','China','Shanghai'],['🇯🇵','Japan','Suzuka'],['🇧🇭','Bahrain','Sakhir'],['🇸🇦','Saudi Arabia','Jeddah'],['🇺🇸','Miami','Miami Gardens'],['🇨🇦','Canada','Montréal'],['🇲🇨','Monaco','Monte Carlo'],['🇪🇸','Spain','Circuit de Barcelona-Catalunya'],['🇦🇹','Austria','Red Bull Ring'],['🇬🇧','Britain','Silverstone'],['🇧🇪','Belgium','Spa-Francorchamps'],['🇭🇺','Hungary','Hungaroring'],['🇳🇱','Netherlands','Zandvoort'],['🇮🇹','Italy','Monza'],['🇪🇸','Madrid','Madring'],['🇦🇿','Azerbaijan','Baku'],['🇸🇬','Singapore','Marina Bay'],['🇺🇸','USA','Austin'],['🇲🇽','Mexico','Mexico City'],['🇧🇷','Brazil','Interlagos'],['🇺🇸','Las Vegas','Las Vegas Strip'],['🇶🇦','Qatar','Lusail'],['🇦🇪','Abu Dhabi','Yas Marina']];
+const NR=[8,10,14,24];
+const cal=()=>{const n=NR[S.tier];return CAL.filter((_,i)=>Math.floor(i*n/24)!==Math.floor((i-1)*n/24))};
+const SP=[['Titanor Tech','Technology & electronics partner',20,20],['Nexora Lubricants','Fuel & lubricants supplier',30,0],['ProRace Exhaust','Exhaust systems manufacturer',30,10],['Optym Data','Data & analytics partner',20,10],['Velox Energy','Energy drink partner',25,15],['Apex Tyres','Tyre service partner',35,5]];
+const SK={qua:['Qualifying','🏁'],pac:['Race Pace','⚡'],tyr:['Tyre Management','🛞'],ovt:['Overtaking','🏎️'],def:['Position Defense','🛡️']};
+const NV=[['home','🏠','Home'],['season','🏁','Season'],['stand','🏆','Standings'],['team','👥','Team'],['shop','🛒','Shop'],['rider','🧑','Rider']];
+const SH={coach:['👨‍🏫 โค้ชส่วนตัว','อัปเกรดสกิลได้ +1 เพิ่มทุกครั้ง',1.5e6,0],doc:['🩺 ทีมแพทย์และนักกายภาพ','สกิลเสื่อมตามอายุช้าลง',2e6,0],watch:['⌚ นาฬิกาหรู','ผู้ติดตาม +5%',3e5,.05],car:['🚗 ซูเปอร์คาร์','ผู้ติดตาม +8%',2.5e6,.08],home:['🏰 คฤหาสน์','ผู้ติดตาม +12%',2.5e7,.12],jet:['🛩️ เครื่องบินส่วนตัว','ผู้ติดตาม +25%',1.5e8,.25]};
+const hs=s=>[...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);
+const tc=n=>'hsl('+(hs(n)%360)+',55%,42%)',code=n=>n.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase(),ab=n=>n.split(' ').pop().replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||'YOU';
+const ord=n=>(n%10==1&&n!=11)?'st':(n%10==2&&n!=12)?'nd':(n%10==3&&n!=13)?'rd':'th';
+const rate=s=>s.pac*.35+s.qua*.15+s.tyr*.2+s.ovt*.2+s.def*.1;
+const ovr=()=>Math.round(Object.values(S.st).reduce((a,b)=>a+b,0)/5);
+const salFor=(t,c)=>Math.round([3e5,7e5,15e5,4e6+(c-58)*3e5][t]/1e4)*1e4;
+const cmpOf=(n,c)=>[0,1,2].map(i=>Math.max(30,Math.min(99,c+hs(n+i)%9-4)));
+const carOf=()=>Math.round(S.cmp.reduce((a,b)=>a+b,0)/3);
+const dcost=v=>Math.round(Math.pow(v/50,3)*2e5/1e4)*1e4,bcost=v=>Math.round(Math.pow(v/50,3)*5e5/1e4)*1e4;
+const sorted=()=>[...S.field].sort((a,b)=>b.p-a.p||b.w-a.w);
+const teams=()=>{const t={};S.field.forEach(d=>t[d.n]=(t[d.n]||0)+d.p);return Object.entries(t).sort((a,b)=>b[1]-a[1]).map(([n,p])=>[n,p,n===S.team])};
+const WH={
+bg:{t:'🏠 ครอบครัวของคุณ',it:W1(['Racing family','Rich family','Poor family']),ap(l){
+  if(l=='Rich family'){const t=T[0].t[RI(0,1)];S.team=t[0];S.cmp=cmpOf(t[0],t[1]);S.car=carOf();S.money+=3e6;S.fol+=1500;return['ครอบครัวรวย: ได้ทีมแรงและงบ +$3M','home']}
+  if(l=='Racing family'){for(const k in S.st)S.st[k]+=6;S.money+=5e5;S.fol+=300;return['ครอบครัวนักแข่ง: ทุกสกิล +6 และงบ +$0.5M','home']}
+  S.hun=1;return['ครอบครัวยากจน: หิวชัยชนะ สกิลโตเองเร็วขึ้นทุกปี','home']}},
+rival:{t:'🏁 คู่แข่งตลอดกาล',it:W1(Object.keys(DR)),ap(l){S.rival=l;return[l,'home']}},
+ret:{t:'🚪 เหตุผลที่เลิกแข่ง',it:W1(Object.keys(RT)),ap(l){S.rsn=l;return[l,'end']}},
+aka:{t:'🏷️ ฉายาประจำปี (Known as...)',it:()=>(S.wit||[]).map(x=>[x,1]),ap(l){S.aka=l;const h=S.c.hist;if(h.length)h[h.length-1]+=' · “'+l+'”';return[l+' — '+AK[l][0],'adv']}}
+};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function newGame(name,nat){
+  const t=T[0].t[RI(2,7)];
+  S={name:name||'นักขับหน้าใหม่',nat:nat||'Thai',age:15,year:2026,tier:0,team:t[0],ph:'w:bg',tab:'home',hun:0,f1y:0,beat:0,money:1e5,fol:RI(150,400),posts:3,feed:[],own:{},inv:{stock:0,crypto:0,fund:0,home:0},sp:[],spOK:0,rr:[],round:0,
+    st:{qua:RI(40,48),pac:RI(40,48),tyr:RI(40,48),ovt:RI(40,48),def:RI(40,48)},
+    c:{seasons:0,races:0,wins:0,pod:0,pts:0,titles:0,f1t:0,best:99,maxTier:0,hist:[]}};
+  S.cmp=cmpOf(t[0],t[1]);S.car=carOf();S.money+=salFor(0,S.car);save();render();
+}
+function go(p){
+  if(p=='adv'){busy=0;return advance()}
+  if(p=='w:aka')S.wit=pickAk();
+  if(p=='home'){if(!S.field)startSeason();S.tab='home'}
+  S.ph=p;busy=0;save();render();
+}
+function tab(t){S.tab=t;save();render();window.scrollTo(0,0)}
+function sub(k,v){S[k]=v;save();render()}
+function mkField(){
+  const tr=T[S.tier],f=[],u=new Set([S.name]),rf=()=>{const v=Object.values(FL);return v[RI(0,v.length-1)]};
+  tr.t.forEach(([n,c])=>{
+    let ds=S.tier==3?DRV[n].slice():[nm(u),nm(u)];
+    if(n===S.team){let i=ds.indexOf(S.rival);if(i<0)i=RI(0,1);ds=[ds[i]]}
+    ds.forEach(d=>f.push({n,c:n===S.team?S.car:c,d,f:S.tier==3?FD[d]:rf(),r:S.tier==3?DR[d]+R(-3,3):tr.b+R(-7,7),p:0,w:0,me:0,rv:d===S.rival?1:0}));
+  });
+  f.push({n:S.team,c:S.car,d:S.name,f:FL[S.nat]||'🏁',r:rate(S.st),p:0,w:0,me:1,rv:0});
+  f.forEach((d,i)=>d.id=i);return f;
+}
+function startSeason(){S.field=mkField();S.round=0;S.rr=[];S.last=null;S.sp=[];S.spOK=0;S.seaSp=0}
+function doRace(){if(S.ph!='home'||S.round>=NR[S.tier])return;raceOnce()}
+function simRest(){while(S.ph=='home'&&S.round<NR[S.tier])raceOnce()}
+function raceOnce(){
+  const f=S.field,c=cal()[S.round],tm=f.find(d=>!d.me&&d.n===S.team),mu=f.find(d=>d.me);
+  mu.r=rate(S.st);
+  const gs=f.map(d=>({d,v:.5*(d.me?S.st.qua*.6+d.r*.4:d.r+R(-4,4))+.5*d.c+R(-7,7)})).sort((a,b)=>b.v-a.v);gs.forEach((x,i)=>x.d.g=i);
+  const sc=f.map(d=>({d,v:Math.random()<(d.me?.07-S.st.tyr*.0006:.06)?-999:.5*d.r+.5*d.c-.3*d.g+R(-1,1)*(d.me?15-S.st.tyr*.07:13)})).sort((a,b)=>b.v-a.v);
+  const pos={};sc.forEach((x,i)=>{const ok=x.v>-900;pos[x.d.id]=ok?i+1:0;if(ok)x.d.p+=PTS[i]||0;if(ok&&i==0)x.d.w++});
+  const mp=pos[mu.id],tp=tm?pos[tm.id]:0,pod=mp>0&&mp<=3;
+  let cash=0;const k=[.5,1,2,5][S.tier];(S.sp||[]).forEach(i=>{cash+=SP[i][2]*1e3*k+(pod?SP[i][3]*1e3*k:0)});
+  S.money+=cash;S.seaSp=(S.seaSp||0)+cash;
+  const cc=S.c;cc.races++;if(mp==1)cc.wins++;if(pod)cc.pod++;
+  S.rr.push({me:mp,tm:tp});
+  S.last={r:c,gp:c[1],pos:mp,pts:mp>0?PTS[mp-1]||0:0,top:sc.slice(0,5).map(x=>[x.d.d,x.d.n,x.d.me]),cash};
+  S.round++;
+  if(S.round>=NR[S.tier])endSeason();else{save();render()}
+}
+function endSeason(){
+  const f=sorted(),t=S.tier,c=S.c,N=NR[t],rank=f.findIndex(d=>d.me)+1,me=f[rank-1];
+  const w=S.rr.filter(x=>x.me==1).length,pd=S.rr.filter(x=>x.me>0&&x.me<=3).length,rv=f.findIndex(d=>d.rv)+1;
+  c.seasons++;c.pts+=me.p;c.best=Math.min(c.best,rank);c.maxTier=Math.max(c.maxTier,t);
+  if(rank==1){c.titles++;if(t==3)c.f1t++}
+  S.rv=rv;if(rv&&rank<rv)S.beat++;
+  c.hist.push(S.year+' · '+T[t].n+' · '+S.team+' · อันดับ '+rank+' ('+me.p+' แต้ม)');
+  S.res=S.rr.map(x=>x.me);S.rank=rank;S.pts=me.p;S.w=w;S.pd=pd;S.fs=f.length;
+  const pz=me.p*[200,500,2e3,4e4][t],b0=S.fol;
+  grow((w/N)*.6+(pd/N)*.2+(rank==1?.25:rank<=3?.1:0)+[0,.05,.1,.2][t]);S.fol+=RI(30,150);
+  const gf=S.fol-b0,sp=Math.round(S.fol*.3),ex=[5e4,15e4,5e5,4e6][t],ri={stock:R(-.3,.4),crypto:R(-.7,.9),fund:R(.02,.06),home:R(.03,.1)};let ig=0;
+  for(const k in ri){const d=Math.round(S.inv[k]*ri[k]);S.inv[k]+=d;ig+=d}
+  S.money+=pz+sp-ex;S.fin={pz,sp,ex,ig,gf,ri,rs:S.seaSp||0};S.seaSp=0;
+  S.ph='off';save();render();
+}
+function develop(k){const v=S.st[k],c=dcost(v);if(S.money<c||v>=99)return;S.money-=c;S.st[k]=cl(v+1+(S.own.coach?1:0));S.field.find(d=>d.me).r=rate(S.st);save();render()}
+function bike(i){const v=S.cmp[i],c=bcost(v);if(S.money<c||v>=99)return;S.money-=c;S.cmp[i]++;S.car=carOf();S.field.forEach(d=>{if(d.n===S.team)d.c=S.car});save();render()}
+function spTog(i){if(S.spOK)return;const a=S.sp,j=a.indexOf(i);if(j>=0)a.splice(j,1);else if(a.length<3)a.push(i);save();render()}
+function spOK(){if(S.sp.length==3){S.spOK=1;save();render()}}
+function sel(i){S.sel=i;save();render()}
+function aging(){
+  S.age++;S.year++;S.posts=3;
+  for(const k in S.st){
+    if(S.age>=33)S.st[k]=cl(S.st[k]-Math.max(0,RI(0,3)-(S.own.doc?1:0)));
+    else if(S.age<=19)S.st[k]=cl(S.st[k]+RI(3,6)+S.hun);
+    else if(S.age<=22)S.st[k]=cl(S.st[k]+RI(2,4)+S.hun);
+  }
+  S.field=null;
+}
+function mkOffers(){
+  const rk=S.rank,t=S.tier,o=[{tier:t,n:S.team,c:S.car,tag:'ต่อสัญญา'}],has=(n,tt)=>o.some(x=>x.n===n&&x.tier===tt);
+  const wpick=(arr,k,wf)=>{const a=arr.slice(),r=[];while(r.length<k&&a.length){const ws=a.map(wf),tot=ws.reduce((x,y)=>x+y,0);let q=Math.random()*tot,i=0;while(i<a.length-1&&q>=ws[i]){q-=ws[i];i++}r.push(a[i]);a.splice(i,1)}return r};
+  const add=(tt,tag,arr,k,wf)=>wpick(arr.filter(x=>!has(x[0],tt)),k,wf||(()=>1)).forEach(([n,c])=>o.push({tier:tt,n,c,tag}));
+  if(t==3)add(3,'ย้ายทีม',T[3].t.filter(x=>x[0]!==S.team),3,x=>tw(x[1]));
+  else{
+    if(t==2&&rk<=5)add(3,'สู่ F1!',T[3].t,3,x=>tw(x[1]));
+    else if(t<2&&rk<=5){const nx=[...T[t+1].t].sort((a,b)=>b[1]-a[1]).slice([0,0,2,4,5,6][rk]);add(t+1,'เลื่อนชั้น',nx,2)}
+    add(t,'ย้ายทีม',T[t].t.filter(x=>x[0]!==S.team&&(rk<=8?x[1]>S.car:x[1]<S.car)),1);
+  }
+  if(rk>=14&&t>0)add(t-1,'ลงไปตั้งหลัก',[...T[t-1].t].sort((a,b)=>b[1]-a[1]).slice(0,3),1);
+  o.forEach((x,i)=>{x.sal=salFor(x.tier,x.c);x.cmp=i==0?S.cmp:cmpOf(x.n,x.c)});
+  S.offers=o;S.sel=0;go('offer');
+}
+function advance(){
+  if(S.retiring||S.age>=40)return go('w:ret');
+  mkOffers();
+}
+function accept(i){
+  const o=S.offers[i],same=o.n===S.team&&o.tier===S.tier;
+  S.tier=o.tier;S.team=o.n;if(!same)S.cmp=cmpOf(o.n,o.c);S.car=carOf();S.money+=o.sal;
+  S.sel=null;aging();
+  if(o.tier==3&&!S.rival)return go('w:rival');
+  go('home');
+}
+function retire(){S.retiring=1;go('w:aka')}
+function toStart(){S=null;render()}
+function startNew(){const v=document.getElementById('nm').value.trim().slice(0,20)||'นักขับหน้าใหม่',n=document.getElementById('nt').value;try{localStorage.setItem('racer_name',v);localStorage.setItem('racer_nat',n)}catch(e){}newGame(v,n)}
+function lastNat(){try{return localStorage.getItem('racer_nat')||'Thai'}catch(e){return 'Thai'}}
+function lastName(){try{return localStorage.getItem('racer_name')||''}catch(e){return ''}}
+function restart(){if(confirm('เริ่มอาชีพใหม่? ข้อมูลเดิมจะหายนะ'))toStart()}
+const seg=(k,o)=>'<div class="seg">'+o.map(([v,l])=>'<button class="'+((S[k]||o[0][0])==v?'on':'')+'" onclick="sub(\''+k+'\',\''+v+'\')">'+l+'</button>').join('')+'</div>';
+const topbar=h=>`<div class="top">${h?`<button onclick="tab('home')">🏠</button>`:''}<div>👥 <b>${nf(S.fol)}</b></div><div>💰 <b>${fmt(S.money)}</b></div></div>`;
+const pr=(i,d,gap)=>`<div class="r ${d.me?'me':''}"><b class="rk r${i<3?i+1:0}">${i+1}</b><span class="hm" style="background:${tc(d.n)}">${code(d.n)}</span><div class="nm"><span>${d.f} ${esc(d.d)}</span><small>${d.n}${d.w?' · 🏆'+d.w:''}</small></div><b class="pp">${gap&&i>0?'<small>-'+gap+' pts</small>':''}${d.p}<small>pts</small></b></div>`;
+const tr2=(i,x)=>`<div class="r ${x[2]?'me':''}"><b class="rk r${i<3?i+1:0}">${i+1}</b><span class="hm" style="background:${tc(x[0])}">${code(x[0])}</span><div class="nm"><span>${x[0]}</span></div><b class="pp">${x[1]}<small>pts</small></b></div>`;
+const itemsV=ks=>ks.map(k=>`<button onclick="buy('${k}')" ${S.own[k]||S.money<SH[k][2]?'disabled':''}>${SH[k][0]} · ${S.own[k]?'✅ ซื้อแล้ว':fmt(SH[k][2])}<br><small>${SH[k][1]}</small></button>`).join('');
+function invView(){
+  const iv=Object.values(S.inv).reduce((a,b)=>a+b,0);
+  return `<div class="card"><h2>${fmt(S.money)}</h2><span class="mu">เงินสด · สินทรัพย์ลงทุน ${fmt(iv)}</span></div><div class="card"><h2>ลงทุน</h2><span class="mu">ผลตอบแทนคิดตอนจบซีซั่น</span>${Object.keys(INV).map(k=>`<div style="margin:10px 0"><b>${INV[k][0]}</b> · ${fmt(S.inv[k])} <span class="mu">(${INV[k][1]})</span><div class="g"><button onclick="put('${k}',.25)">ใส่ 25%</button><button onclick="put('${k}',.5)">ใส่ 50%</button><button onclick="put('${k}',1)">ใส่หมด</button><button onclick="cash('${k}')" ${S.inv[k]?'':'disabled'}>ขาย</button></div></div>`).join('')}</div>`;
+}
+function homeV(){
+  const f=sorted(),pos=f.findIndex(d=>d.me)+1,n=NR[S.tier],c=cal()[S.round],L=S.last;
+  let h=`<div class="hero"><div class="row2"><span class="chip">● SEASON ${S.c.seasons+1} · ${S.year}</span><span class="box">POS <b>${pos}${ord(pos)}</b></span><span class="box red">OVR <b>${ovr()}</b></span></div><div class="who"><div class="av">🧑</div><div><div class="big">${esc(S.name)} ${FL[S.nat]||''}</div><div><span class="bdg" style="background:${tc(S.team)}">${code(S.team)}</span> ${S.team} · ${T[S.tier].n}</div></div></div><div class="prog"><span>SEASON PROGRESS</span><b>${S.round}/${n}</b></div><div class="bar"><i style="width:${S.round/n*100}%"></i></div></div>`;
+  if(L)h+=`<div class="card"><small>ผลสนามล่าสุด · ${L.r[0]} ${L.gp}</small><h2>${L.pos?'P'+L.pos+' · +'+L.pts+' pts':'DNF'}${L.cash?' · +'+fmt(L.cash):''}</h2><span class="mu">${L.top.map((x,i)=>(i+1)+'. '+(x[2]?'★':'')+esc(x[0])).join(' · ')}</span></div>`;
+  h+=`<div class="sec">NEXT RACE</div><div class="card race"><div class="fg">${c[0]}</div><div style="flex:1"><h2>${c[1]}</h2><small>${c[2]} · ROUND ${S.round+1}</small></div><button class="p" style="width:100px;margin:0" onclick="doRace()">🏁 RACE</button></div><button class="s" onclick="simRest()">⏭ ซิมที่เหลือทั้งซีซั่น</button>`;
+  h+=`<div class="sec">CHAMPIONSHIP</div><div class="card"><div class="row2"><small>AFTER ${S.round} OF ${n} RACES</small><a onclick="tab('stand')" style="color:var(--ac)">Full standings ›</a></div>${f.slice(0,5).map((d,i)=>pr(i,d,f[0].p-d.p)).join('')}${pos>5?pr(pos-1,f[pos-1],f[0].p-f[pos-1].p):''}</div>`;
+  return h;
+}
+function seasonV(){
+  const n=NR[S.tier],C=cal(),tm=S.field.find(d=>!d.me&&d.n===S.team),ps=p=>p?'P'+p:'DNF';
+  let h=`<div class="hero"><small>SEASON</small><div class="big" style="font-size:34px">${S.year}</div><div class="prog"><span>${T[S.tier].n}</span><b>${S.round}/${n} RACES</b></div><div class="bar"><i style="width:${S.round/n*100}%"></i></div></div>`+seg('se',[['cal','📅 Calendar'],['tm','👥 Teams']]);
+  if((S.se||'cal')=='tm')return h+T[S.tier].t.map(([nn,c])=>{const ds=S.field.filter(d=>d.n===nn);return `<div class="r"><span class="hm" style="background:${tc(nn)}">${code(nn)}</span><div class="nm"><span>${nn}</span><small>${ds.map(d=>esc(d.d)).join(' · ')}</small></div><b class="pp">${nn==S.team?S.car:c}<small>OVR</small></b></div>`}).join('');
+  if(S.round<n)h+=`<button class="p" onclick="doRace()">🏁 GO TO RACE · ${C[S.round][1]}</button>`;
+  return h+C.map((x,i)=>{const r=S.rr[i];return `<div class="r" style="opacity:${i>S.round?.55:1}${i==S.round?';border-color:var(--ac)':''}"><small>${String(i+1).padStart(2,'0')}</small><span style="font-size:26px">${x[0]}</span><div class="nm"><span>${x[1]}</span><small>${r?ab(S.name)+': '+ps(r.me)+(tm?' · '+ab(tm.d)+': '+ps(r.tm):''):x[2]}</small></div>${r?'✅':i==S.round?'<b style="color:var(--ac)">NEXT</b>':''}</div>`}).join('');
+}
+function standV(){
+  let h=`<h1>Championship</h1><small>After ${S.round} of ${NR[S.tier]} races</small>`+seg('s1',[['ch','Championship'],['hi','History']]);
+  if((S.s1||'ch')=='hi')return h+(S.c.hist.length?S.c.hist.slice().reverse().map(x=>`<div class="r"><span class="nm">${x}</span></div>`).join(''):'<p class="mu">ยังไม่มีประวัติ</p>');
+  h+=`<div class="card" style="text-align:center"><b>${T[S.tier].n.toUpperCase()}</b></div>`+seg('s2',[['rd','Riders'],['tm','Teams']]);
+  return h+((S.s2||'rd')=='tm'?teams().map((x,i)=>tr2(i,x)).join(''):sorted().map((d,i)=>pr(i,d,0)).join(''));
+}
+function teamV(){
+  const tr=teams(),tp=tr.findIndex(x=>x[2])+1,tt=tr[tp-1][1],k=[.5,1,2,5][S.tier];
+  let h=`<div class="hero"><small>TEAM HEADQUARTERS</small><div class="big">${S.team}</div><small>${S.year} Season</small><div class="row2" style="margin-top:10px"><div><b>${S.car}</b><small> CAR OVR</small></div><div><b>P${tp}</b><small> POSITION</small></div><div><b>${tt}</b><small> POINTS</small></div></div></div><div class="card" style="border-color:var(--gn)">Available Budget <b style="float:right;color:var(--gn)">${fmt(S.money)}</b></div>`+seg('tt',[['bk','🏎 Bike'],['sf','🛠 Staff'],['sp','🤝 Sponsors']]);
+  const t=S.tt||'bk';
+  if(t=='bk')h+=['Engine','Aero','Electronics'].map((l,i)=>{const v=S.cmp[i],c=bcost(v);return `<div class="sk"><div class="mid"><div class="row2"><b>${l}</b><b>${v}</b></div><div class="bar"><i style="width:${v}%"></i></div></div><button onclick="bike(${i})" ${S.money<c||v>=99?'disabled':''}>⬆<br>${fmt(c)}</button></div>`}).join('');
+  else if(t=='sf')h+=itemsV(['coach','doc']);
+  else{
+    const sel=S.sp||[],a=sel.reduce((x,i)=>x+SP[i][2]*k,0),b=sel.reduce((x,i)=>x+SP[i][3]*k,0);
+    h+=`<div class="card row2"><div><b>${sel.length}/3</b><small> SELECTED</small></div><div style="color:var(--gn)">+$${a}K<small> /RACE</small></div><div style="color:var(--gd)">+$${b}K<small> /PODIUM</small></div></div>`+SP.map((s,i)=>`<button class="of ${sel.includes(i)?'on':''}" onclick="spTog(${i})" ${S.spOK?'disabled':''}><b>${s[0]}</b><br><small>${s[1]}</small><br><span style="color:var(--gn)">+$${s[2]*k}K/race</span>${s[3]?' <span style="color:var(--gd)">+$'+s[3]*k+'K/podium</span>':''}</button>`).join('')+`<button class="p" onclick="spOK()" ${S.spOK||sel.length<3?'disabled':''}>${S.spOK?'✅ ยืนยันแล้ว':'ยืนยันสปอนเซอร์ ('+sel.length+'/3)'}</button>`;
+  }
+  return h;
+}
+function shopV(){const t=S.sh||'it';return '<h1>Shop</h1>'+seg('sh',[['it','🛍 ของใช้'],['iv','📈 ลงทุน'],['ig','📱 Instagram']])+(t=='it'?itemsV(['watch','car','home','jet']):t=='iv'?invView():igView())}
+function riderV(){
+  const pos=sorted().findIndex(d=>d.me)+1,me=S.field.find(d=>d.me),c=S.c;
+  let h=`<div class="hero"><small>RIDER PROFILE</small><div class="big">${FL[S.nat]||''} ${esc(S.name)}</div><div><span class="bdg" style="background:${tc(S.team)}">${code(S.team)}</span> ${S.team}</div><small>${T[S.tier].n} · ${S.year} · season ${c.seasons+1}${S.aka?' · “'+S.aka+'”':''}</small><div class="row2" style="margin-top:10px"><div><b>${ovr()}</b><small> OVERALL</small></div><div><b>${S.age}</b><small> AGE</small></div><div><b>P${pos}</b><small> POSITION</small></div><div><b>${me.p}</b><small> POINTS</small></div></div></div>`+seg('rt',[['dv','💪 Development'],['cr','🏆 Career']]);
+  if((S.rt||'dv')=='dv')return h+`<div class="card"><div class="row2"><h2>RIDER DEVELOPMENT</h2><b style="color:var(--gn)">${fmt(S.money)}</b></div>`+Object.keys(SK).map(k=>{const v=S.st[k],cs=dcost(v);return `<div class="sk"><div class="ic">${SK[k][1]}</div><div class="mid"><div class="row2"><span>${SK[k][0]}</span><b>${v}</b></div><div class="bar"><i style="width:${v}%"></i></div></div><button onclick="develop('${k}')" ${S.money<cs||v>=99?'disabled':''}>⬆<br>${fmt(cs)}</button></div>`}).join('')+`<div class="row2"><span>OVERALL</span><div class="bar" style="margin:0 10px"><i style="width:${ovr()}%"></i></div><b>${ovr()}</b></div></div>`;
+  return h+`<div class="card"><h2>CAREER</h2><span class="mu">ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม<br>ชนะ ${c.wins} · โพเดียม ${c.pod} · แต้มรวม ${c.pts}<br>แชมป์ ${c.titles} สมัย (F1: ${c.f1t}) · อันดับดีที่สุด ${c.best==99?'-':c.best}</span></div>`+c.hist.slice().reverse().map(x=>`<div class="r"><span class="nm">${x}</span></div>`).join('');
+}
+function offV(){
+  const f=sorted(),rk=S.rank,fi=S.fin,iv=Object.keys(S.inv).filter(k=>S.inv[k]);
+  return topbar(0)+`<h1>🏁 จบซีซั่น ${S.year}</h1><div class="card"><small>YOUR SEASON</small><div class="row2" style="margin-top:8px"><div><h2>P${rk}</h2><small>POS.</small></div><div><h2>${S.pts}</h2><small>POINTS</small></div><div><h2>${S.w}</h2><small>WINS</small></div><div><h2>${S.pd}</h2><small>PODIUMS</small></div></div></div><div class="sec">FINAL STANDINGS</div>${seg('s2',[['rd','Riders'],['tm','Teams']])}${(S.s2||'rd')=='tm'?teams().map((x,i)=>tr2(i,x)).join(''):f.map((d,i)=>pr(i,d,f[0].p-d.p)).join('')}<div class="card" style="border-color:var(--gn)"><h2>💰 สรุปการเงินปีนี้</h2><span class="mu">สปอนเซอร์ทีม ${fmt(fi.rs)} · โบนัสแต้ม ${fmt(fi.pz)}<br>สปอนเซอร์จากผู้ติดตาม ${fmt(fi.sp)} · ค่าใช้จ่าย -${fmt(fi.ex)}<br>ผู้ติดตามเพิ่ม +${nf(fi.gf)}${iv.length?'<br>การลงทุน: '+iv.map(k=>INV[k][0].split(' ')[1]+' '+(fi.ri[k]>=0?'+':'')+Math.round(fi.ri[k]*100)+'%').join(' · '):''}</span></div>${S.rv&&S.tier==3?`<p class="mu">คู่แข่ง ${S.rival} จบอันดับ ${S.rv} ${rk<S.rv?'— คุณชนะ!':'— คุณแพ้'}</p>`:''}<button class="p" onclick="go('w:aka')">🏷️ ดูฉายาประจำปี</button>${S.age>=30&&S.age<40?'<button class="s" onclick="retire()">เกษียณตอนนี้</button>':''}`;
+}
+function offCard(x,i){
+  const cur=!x.spin&&x.n===S.team&&x.tier===S.tier;
+  return `<div class="card of ${S.sel==i?'on':''}" onclick="sel(${i})">${x.spin?`<h2>🎡 ${x.n}</h2><small>${x.tag} · เงินเดือนโดยประมาณ ${fmt(x.sal)}</small>`:`<div class="row2"><span class="hm" style="background:${tc(x.n)}">${code(x.n)}</span><b style="flex:1;margin-left:8px">${x.n}</b><span class="box">OVR ${x.c}</span>${S.sel==i?' ✅':''}</div><small>${x.tag}${cur?' · CURRENT TEAM':''} · ${T[x.tier].n}</small><div class="mu" style="margin:6px 0">${fmt(x.sal)} / year salary</div>${['Engine','Aero','Electronics'].map((l,j)=>`<div class="row2"><span class="mu">${l}</span><div class="bar" style="margin:0 8px"><i style="width:${x.cmp[j]}%"></i></div><b>${x.cmp[j]}</b></div>`).join('')}`}</div>`;
+}
+function offerV(){
+  const o=S.offers,s=o[S.sel||0];
+  return topbar(0)+`<div class="card" style="border-color:var(--gn)"><h2>${S.year+1} Salary <b style="float:right;color:var(--gn)">${fmt(s.sal+S.money)}</b></h2><div class="row2 mu"><span>Annual salary</span><span style="color:var(--gn)">+${fmt(s.sal)}</span></div><div class="row2 mu"><span>Carried over from last season</span><span style="color:var(--gn)">+${fmt(S.money)}</span></div></div><div class="sec">JOB OFFERS - ${S.year+1}</div><p class="mu">เลือกทีมที่จะขับในปี ${S.year+1} เงินเดือนจะกลายเป็นงบพัฒนานักแข่ง</p>`+o.map(offCard).join('')+`<button class="p" onclick="accept(S.sel||0)">✅ ยืนยันสัญญา</button>`;
+}
+function wheelV(){
+  const w=WH[S.ph.slice(2)];
+  return `<h1>🏎️ Journey to F1</h1><div class="card"><h2 style="text-align:center">${w.t}</h2>${wheelSvg(typeof w.it=='function'?w.it():w.it)}<div id="res"></div><button class="p" onclick="spin()">หมุน!</button></div>`;
+}
+function endV(){
+  const c=S.c,iv=Object.values(S.inv).reduce((a,b)=>a+b,0);
+  const t=c.f1t>=3?'ตำนานแห่งสนามแข่ง':c.f1t>=1?'แชมป์โลก':c.maxTier==3&&c.wins>0?'ผู้ชนะระดับ F1':c.maxTier==3?'นักขับ F1':'นักขับอาชีพ';
+  return `<h1>🏁 จบอาชีพ</h1><div class="card"><h2>${esc(S.name)} · ${t}</h2>${S.aka?'<b>“'+S.aka+'”</b> <span class="mu">'+AK[S.aka][0]+'</span><br>':''}<span class="mu">เลิกแข่งตอนอายุ ${S.age} เพราะ ${S.rsn?S.rsn+' ('+RT[S.rsn]+')':'-'}</span><br><br>สัญชาติ ${S.nat||'-'} · ลีกสูงสุด ${T[c.maxTier].n}<br>ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม<br>ชนะ ${c.wins} · โพเดียม ${c.pod} · แต้มรวม ${c.pts}<br>แชมป์ ${c.titles} สมัย (F1: ${c.f1t})<br>ผู้ติดตาม ${nf(S.fol)} · ทรัพย์สินรวม ${fmt(S.money+iv)}<br>อันดับดีที่สุด ${c.best==99?'-':c.best}${S.rival?'<br>คู่แข่ง '+S.rival+': คุณชนะเขา '+S.beat+' ซีซั่น':''}</div><div class="card"><h2>ประวัติรายปี</h2>${c.hist.map(x=>'<div class="mu">'+x+'</div>').join('')}</div><button class="p" onclick="toStart()">เริ่มอาชีพใหม่</button>`;
+}
+function startV(){return `<h1>🏎️ Journey to F1</h1><p class="mu">เริ่มขับตอนอายุ 15 หมุนวงล้อโชคชะตา อัปเกรดนักแข่งและรถ หาสปอนเซอร์ แล้วไต่จาก F4 สู่ F1 ให้ได้</p><div class="card"><label class="mu" for="nm">ตั้งชื่อนักแข่งของคุณ</label><input id="nm" maxlength="20" placeholder="เช่น P.Pholmark" value="${esc(lastName())}" autocomplete="off"><label class="mu" for="nt" style="display:block;margin-top:12px">สัญชาติ</label><select id="nt">${Object.keys(FL).map(k=>`<option value="${k}" ${k==lastNat()?'selected':''}>${FL[k]} ${k}</option>`).join('')}</select></div><button class="p" onclick="startNew()">เริ่มอาชีพใหม่</button>`}
+function render(){
+  const a=document.getElementById('app');
+  if(!S){a.innerHTML=startV();return}
+  const p=S.ph;let h='';
+  if(p.startsWith('w:'))h=wheelV();
+  else if(p=='end')h=endV();
+  else if(p=='off')h=offV();
+  else if(p=='offer')h=offerV();
+  else{
+    const t=S.tab||'home';
+    h=topbar(1)+({home:homeV,season:seasonV,stand:standV,team:teamV,shop:shopV,rider:riderV}[t])()+(t=='home'?'<button class="s" onclick="restart()">เริ่มอาชีพใหม่</button>':'')+'<div class="nav">'+NV.map(([k,i,l])=>'<button class="'+(t==k?'on':'')+'" onclick="tab(\''+k+'\')"><span>'+i+'</span>'+l+'</button>').join('')+'</div>';
+  }
+  a.innerHTML=h;
+}
+S=load();render();
+</script>
+</body>
+</html>
