@@ -29,7 +29,7 @@ input,select{width:100%;padding:12px;margin-top:6px;border:1px solid var(--bd);b
 .bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;flex:1}.bar i{display:block;height:100%;background:var(--ac)}
 .sec{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:12px;letter-spacing:3px;margin:14px 0 6px}.sec:before,.sec:after{content:"";flex:1;height:1px;background:var(--bd)}
 .race{display:flex;gap:12px;align-items:center}.race .fg{font-size:44px}
-.r{display:flex;align-items:center;gap:10px;padding:8px;margin:5px 0;background:var(--cd);border-radius:12px;border:1px solid var(--bd)}.r.me{border-color:var(--ac)}
+.r{display:flex;align-items:center;gap:10px;padding:8px;margin:5px 0;background:var(--cd);border-radius:12px;border:1px solid var(--bd)}.r{cursor:pointer}.r.me{border-color:var(--ac)}
 .rk{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--bd)}.rk.r1{background:var(--gd);color:#000}.rk.r2{background:#c0c0c0;color:#000}.rk.r3{background:#cd7f32;color:#000}
 .nm{flex:1;min-width:0}.nm span{display:block}.pp{text-align:right}.pp small{display:block}
 .seg{display:flex;gap:6px;background:var(--c2);padding:5px;border-radius:12px;margin:8px 0}.seg button{margin:0;text-align:center;padding:9px 4px;border:0;background:none;color:var(--mu)}.seg button.on{background:var(--ac);color:#fff}
@@ -163,14 +163,25 @@ const carOf=()=>Math.round(S.cmp.reduce((a,b)=>a+b,0)/3);
 const dcost=v=>Math.round(Math.pow(v/50,3)*2e5/1e4)*1e4,bcost=v=>Math.round(Math.pow(v/50,3)*5e5/1e4)*1e4;
 const sorted=()=>[...S.field].sort((a,b)=>b.p-a.p||b.w-a.w);
 const teams=()=>{const t={};S.field.forEach(d=>t[d.n]=(t[d.n]||0)+d.p);return Object.entries(t).sort((a,b)=>b[1]-a[1]).map(([n,p])=>[n,p,n===S.team])};
+const tro=(w,p,t,o)=>`<div class="card"><div class="row2" style="text-align:center"><div><div style="font-size:26px">🏆</div><b>${w}</b><small> WINS</small></div><div><div style="font-size:26px">🥉</div><b>${p}</b><small> PODIUMS</small></div><div><div style="font-size:26px">👑</div><b>${t}</b><small> WDC</small></div></div>${o>0?'<small>แชมป์ลีกล่าง '+o+' สมัย</small>':''}</div>`;
+const seasL=x=>typeof x=='string'?'<div class="r"><span class="nm">'+x+'</span></div>':`<div class="r"><div class="nm"><span>${x.y} · ${T[x.tier].n}</span><small>${x.team}${x.aka?' · “'+x.aka+'”':''}</small></div><div class="pp" style="min-width:150px"><b>${x.rk==1?(x.tier==3?'👑 WDC':'🏅 แชมป์'):(x.tier==3?'WDC ':'')+'P'+x.rk}</b><small>🏆${x.w} · 🥉${x.pd} · ${x.pts} pts</small></div></div>`;
+function legends(){try{return JSON.parse(localStorage.getItem('racer_hof'))||[]}catch(e){return []}}
+function saveHof(){
+  const c=S.c;if(S.hofSaved||!(c.f1t>=1||(c.f1w||0)>=10))return;S.hofSaved=1;S.inHof=1;
+  try{const a=legends();a.push({n:S.name,f:FL[S.nat]||'🏁',aka:S.aka||'',y:S.year,w:c.wins,p:c.pod,t:c.f1t,s:c.seasons});localStorage.setItem('racer_hof',JSON.stringify(a))}catch(e){}
+}
+function hofV(){
+  const L=S.D.filter(x=>x.hof).sort((a,b)=>((b.f1t||0)*30+(b.f1w||0))-((a.f1t||0)*30+(a.f1w||0))),P=legends().slice().reverse();
+  return `<div class="card"><h2>🏛 HALL OF FAME</h2><span class="mu">เกณฑ์: เกษียณจาก F1 โดยเป็น WDC อย่างน้อย 1 สมัย หรือชนะ F1 ตั้งแต่ 10 ครั้ง</span></div><div class="sec">ตำนานของโลกนี้</div>`+(L.length?L.map(x=>`<div class="r" onclick="pv(${x.id})"><span class="hm" style="background:${tc(x.team)}">${code(x.team)}</span><div class="nm"><span>${x.f} ${esc(x.d)}</span><small>เกษียณ ${x.ret} · อายุ ${x.a}</small></div><b class="pp"><small>👑${x.f1t||0} 🏆${x.f1w||0} 🥉${x.f1p||0}</small></b></div>`).join(''):'<p class="mu">ยังไม่มีผู้เข้าหอเกียรติยศ</p>')+`<div class="sec">ตำนานจากอาชีพของคุณ</div>`+(P.length?P.map(x=>`<div class="r"><div class="nm"><span>${x.f} ${esc(x.n)}${x.aka?' “'+esc(x.aka)+'”':''}</span><small>ปี ${x.y} · ${x.s} ซีซั่น</small></div><b class="pp"><small>👑${x.t} 🏆${x.w} 🥉${x.p}</small></b></div>`).join(''):'<p class="mu">ยังไม่มี — เป็น WDC หรือชนะ F1 ให้ครบ 10 ครั้งเพื่อเข้าหอเกียรติยศ</p>');
+}
 const WH={
 bg:{t:'🏠 ครอบครัวของคุณ',it:W1(['Racing family','Rich family','Poor family']),ap(l){
   if(l=='Rich family'){const t=T[0].t[RI(0,1)];S.team=t[0];S.cmp=cmpOf(t[0],t[1]);S.car=carOf();S.money+=3e6;S.fol+=1500;return['ครอบครัวรวย: ได้ทีมแรงและงบ +$3M','home']}
   if(l=='Racing family'){for(const k in S.st)S.st[k]+=6;S.money+=5e5;S.fol+=300;return['ครอบครัวนักแข่ง: ทุกสกิล +6 และงบ +$0.5M','home']}
   S.hun=1;return['ครอบครัวยากจน: หิวชัยชนะ สกิลโตเองเร็วขึ้นทุกปี','home']}},
-rival:{t:'🏁 คู่แข่งตลอดกาล',it:W1(Object.keys(DR)),ap(l){S.rival=l;return[l,'home']}},
-ret:{t:'🚪 เหตุผลที่เลิกแข่ง',it:W1(Object.keys(RT)),ap(l){S.rsn=l;return[l,'end']}},
-aka:{t:'🏷️ ฉายาประจำปี (Known as...)',it:()=>(S.wit||[]).map(x=>[x,1]),ap(l){S.aka=l;const h=S.c.hist;if(h.length)h[h.length-1]+=' · “'+l+'”';return[l+' — '+AK[l][0],'adv']}}
+rival:{t:'🏁 คู่แข่งตลอดกาล',it:()=>S.D.filter(x=>!x.ret&&x.tier==3).map(x=>[x.d,1]),ap(l){S.rival=l;return[l,'home']}},
+ret:{t:'🚪 เหตุผลที่เลิกแข่ง',it:W1(Object.keys(RT)),ap(l){S.rsn=l;saveHof();return[l,'end']}},
+aka:{t:'🏷️ ฉายาประจำปี (Known as...)',it:()=>(S.wit||[]).map(x=>[x,1]),ap(l){S.aka=l;const h=S.c.hist,z=h[h.length-1];if(z){if(typeof z=='string')h[h.length-1]=z+' · “'+l+'”';else z.aka=l}return[l+' — '+AK[l][0],'adv']}}
 };
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
@@ -179,7 +190,7 @@ function newGame(name,nat){
   S={name:name||'นักขับหน้าใหม่',nat:nat||'Thai',age:15,year:2026,tier:0,team:t[0],ph:'w:bg',tab:'home',hun:0,f1y:0,beat:0,money:1e5,fol:RI(150,400),posts:3,feed:[],own:{},inv:{stock:0,crypto:0,fund:0,home:0},sp:[],spOK:0,rr:[],round:0,
     st:{qua:RI(40,48),pac:RI(40,48),tyr:RI(40,48),ovt:RI(40,48),def:RI(40,48)},
     c:{seasons:0,races:0,wins:0,pod:0,pts:0,titles:0,f1t:0,best:99,maxTier:0,hist:[]}};
-  S.cmp=cmpOf(t[0],t[1]);S.car=carOf();S.money+=salFor(0,S.car);save();render();
+  initWorld();S.cmp=cmpOf(t[0],t[1]);S.car=carOf();S.money+=salFor(0,S.car);save();render();
 }
 function go(p){
   if(p=='adv'){busy=0;return advance()}
@@ -189,12 +200,44 @@ function go(p){
 }
 function tab(t){S.tab=t;save();render();window.scrollTo(0,0)}
 function sub(k,v){S[k]=v;save();render()}
+const AGE={'Max Verstappen':29,'Lando Norris':26,'Charles Leclerc':28,'Oscar Piastri':25,'George Russell':28,'Lewis Hamilton':41,'Kimi Antonelli':19,'Fernando Alonso':45,'Carlos Sainz':31,'Alex Albon':30,'Pierre Gasly':30,'Esteban Ocon':29,'Oliver Bearman':21,'Nico Hulkenberg':39,'Isack Hadjar':21,'Gabriel Bortoleto':21,'Liam Lawson':24,'Sergio Perez':36,'Valtteri Bottas':36,'Lance Stroll':27,'Arvid Lindblad':18,'Franco Colapinto':23};
+const rf=()=>{const v=Object.values(FL);return v[RI(0,v.length-1)]};
+function mkDrv(t,team,name){
+  const u=new Set(S.D.map(x=>x.d));u.add(S.name);
+  const a=name?AGE[name]:t==0?RI(15,18):t==1?RI(17,21):RI(19,24),r=name?DR[name]:T[t].b+R(-7,7);
+  return {id:S.nid++,d:name||nm(u),f:name?FD[name]:rf(),a,r,pot:name?(a<=26?r+RI(2,8):r):r+RI(5,15),tier:t,team,w:0,pd:0,f1w:0,f1p:0,f1t:0,t:0,s:0,pts:0,b:99,lp:0,ret:0,why:'',h:[]};
+}
+function initWorld(){S.nid=0;S.D=[];S.news=[];T.forEach((tt,ti)=>tt.t.forEach(([n])=>{for(let k=0;k<2;k++)S.D.push(mkDrv(ti,n,ti==3?DRV[n][k]:null))}))}
+function worldYear(){
+  const D=S.D,gone=[],news=[];
+  D.forEach(x=>{if(x.ret)return;x.a++;
+    if(x.a<=24)x.r=Math.min(x.pot,x.r+RI(1,4));else if(x.a>=36)x.r=Math.max(40,x.r-RI(0,2));
+    let why='';
+    if(x.tier==3){if(Math.random()<Math.min(.98,Math.max(0,(x.a-44)*.2)))why='เกษียณ';else if(x.a>=36&&x.r<62)why='ฟอร์มตก'}
+    else if(x.a>[18,21,24][x.tier])why='ออกจากสายแข่ง';
+    if(why){x.ret=S.year;x.why=why;gone.push(x);if(x.tier==3&&((x.f1t||0)>=1||(x.f1w||0)>=10)){x.hof=1;news.push({id:x.id,t:'🏛 '+x.d+' เข้าสู่ Hall of Fame'})}}
+  });
+  const vac=gone.map(x=>({t:x.tier,n:x.team,w:x}));
+  for(let t=3;t>=0;t--)vac.filter(v=>v.t==t).forEach(v=>{
+    let c;
+    if(t==0){c=mkDrv(0,v.n);c.a=RI(15,16);c.r=T[0].b+R(-9,5);c.pot=c.r+RI(6,16);D.push(c)}
+    else{const cs=D.filter(y=>!y.ret&&y.tier===t-1);cs.sort((a,b)=>(b.r+b.lp*.05)-(a.r+a.lp*.05));c=cs[0];if(!c)return;vac.push({t:t-1,n:c.team,w:null})}
+    c.tier=t;c.team=v.n;
+    if(v.w&&t>=2)news.push({id:c.id,t:'📰 '+v.w.d+' ('+v.w.a+') '+v.w.why+' · '+c.d+' ขึ้นจาก '+T[t-1].n+' มาแทน'});
+  });
+  S.news=news;
+}
+function pv(id){S.pv=id;save();render();window.scrollTo(0,0)}
+function profV(){
+  const x=S.D.find(y=>y.id===S.pv);if(!x){S.pv=null;return ''}
+  return `<button class="s" onclick="pv(null)">← กลับ</button><div class="hero"><small>DRIVER PROFILE</small><div class="big">${x.f} ${esc(x.d)}</div><div>${x.ret?'<b>เกษียณแล้ว</b> · '+x.why+' ปี '+x.ret:'<span class="bdg" style="background:'+tc(x.team)+'">'+code(x.team)+'</span> '+x.team+' · '+T[x.tier].n}</div><div class="row2" style="margin-top:10px"><div><b>${Math.round(x.r)}</b><small> OVR</small></div><div><b>${x.a}</b><small> AGE</small></div><div><b>${x.a<=25&&!x.ret?Math.round(x.pot):'-'}</b><small> POT</small></div></div></div>${x.hof?'<div class="card" style="border-color:var(--gd)"><h2>🏛 Hall of Fame</h2></div>':''}${tro(x.w,x.pd||0,x.f1t||0,x.t-(x.f1t||0))}<div class="card"><span class="mu">ซีซั่นในเกม ${x.s} · แต้มรวม ${x.pts} · อันดับดีที่สุด ${x.b==99?'-':x.b}</span></div>${x.h.length?x.h.slice(-12).reverse().map(seasL).join(''):'<p class="mu">ยังไม่มีประวัติ</p>'}`;
+}
 function mkField(){
-  const tr=T[S.tier],f=[],u=new Set([S.name]),rf=()=>{const v=Object.values(FL);return v[RI(0,v.length-1)]};
-  tr.t.forEach(([n,c])=>{
-    let ds=S.tier==3?DRV[n].slice():[nm(u),nm(u)];
-    if(n===S.team){let i=ds.indexOf(S.rival);if(i<0)i=RI(0,1);ds=[ds[i]]}
-    ds.forEach(d=>f.push({n,c:n===S.team?S.car:c,d,f:S.tier==3?FD[d]:rf(),r:S.tier==3?DR[d]+R(-3,3):tr.b+R(-7,7),p:0,w:0,me:0,rv:d===S.rival?1:0}));
+  const t=S.tier,f=[];
+  T[t].t.forEach(([n,c])=>{
+    let ds=S.D.filter(x=>!x.ret&&x.tier===t&&x.team===n);
+    if(n===S.team&&ds.length>1){let i=ds.findIndex(x=>x.d===S.rival);if(i<0)i=RI(0,ds.length-1);ds=[ds[i]]}
+    ds.forEach(x=>f.push({n,c:n===S.team?S.car:c,d:x.d,f:x.f,r:x.r+R(-3,3),p:0,w:0,pd:0,me:0,rv:x.d===S.rival?1:0,wid:x.id}));
   });
   f.push({n:S.team,c:S.car,d:S.name,f:FL[S.nat]||'🏁',r:rate(S.st),p:0,w:0,me:1,rv:0});
   f.forEach((d,i)=>d.id=i);return f;
@@ -207,11 +250,11 @@ function raceOnce(){
   mu.r=rate(S.st);
   const gs=f.map(d=>({d,v:.5*(d.me?S.st.qua*.6+d.r*.4:d.r+R(-4,4))+.5*d.c+R(-7,7)})).sort((a,b)=>b.v-a.v);gs.forEach((x,i)=>x.d.g=i);
   const sc=f.map(d=>({d,v:Math.random()<(d.me?.07-S.st.tyr*.0006:.06)?-999:.5*d.r+.5*d.c-.3*d.g+R(-1,1)*(d.me?15-S.st.tyr*.07:13)})).sort((a,b)=>b.v-a.v);
-  const pos={};sc.forEach((x,i)=>{const ok=x.v>-900;pos[x.d.id]=ok?i+1:0;if(ok)x.d.p+=PTS[i]||0;if(ok&&i==0)x.d.w++});
+  const pos={};sc.forEach((x,i)=>{const ok=x.v>-900;pos[x.d.id]=ok?i+1:0;if(ok)x.d.p+=PTS[i]||0;if(ok&&i==0)x.d.w++;if(ok&&i<3)x.d.pd=(x.d.pd||0)+1});
   const mp=pos[mu.id],tp=tm?pos[tm.id]:0,pod=mp>0&&mp<=3;
   let cash=0;const k=[.5,1,2,5][S.tier];(S.sp||[]).forEach(i=>{cash+=SP[i][2]*1e3*k+(pod?SP[i][3]*1e3*k:0)});
   S.money+=cash;S.seaSp=(S.seaSp||0)+cash;
-  const cc=S.c;cc.races++;if(mp==1)cc.wins++;if(pod)cc.pod++;
+  const cc=S.c;cc.races++;if(mp==1)cc.wins++;if(pod)cc.pod++;if(S.tier==3){cc.f1w=(cc.f1w||0)+(mp==1?1:0);cc.f1p=(cc.f1p||0)+(pod?1:0)}
   S.rr.push({me:mp,tm:tp});
   S.last={r:c,gp:c[1],pos:mp,pts:mp>0?PTS[mp-1]||0:0,top:sc.slice(0,5).map(x=>[x.d.d,x.d.n,x.d.me]),cash};
   S.round++;
@@ -223,8 +266,9 @@ function endSeason(){
   c.seasons++;c.pts+=me.p;c.best=Math.min(c.best,rank);c.maxTier=Math.max(c.maxTier,t);
   if(rank==1){c.titles++;if(t==3)c.f1t++}
   S.rv=rv;if(rv&&rank<rv)S.beat++;
-  c.hist.push(S.year+' · '+T[t].n+' · '+S.team+' · อันดับ '+rank+' ('+me.p+' แต้ม)');
+  c.hist.push({y:S.year,tier:t,team:S.team,rk:rank,pts:me.p,w,pd});
   S.res=S.rr.map(x=>x.me);S.rank=rank;S.pts=me.p;S.w=w;S.pd=pd;S.fs=f.length;
+  f.forEach((d,i)=>{if(d.wid==null)return;const x=S.D.find(y=>y.id===d.wid),pdn=d.pd||0;x.s++;x.pts+=d.p;x.w+=d.w;x.pd=(x.pd||0)+pdn;x.lp=d.p;x.b=Math.min(x.b,i+1);if(i==0)x.t++;if(t==3){x.f1w=(x.f1w||0)+d.w;x.f1p=(x.f1p||0)+pdn;if(i==0)x.f1t=(x.f1t||0)+1}x.h.push({y:S.year,tier:t,team:d.n,rk:i+1,pts:d.p,w:d.w,pd:pdn})});
   const pz=me.p*[200,500,2e3,4e4][t],b0=S.fol;
   grow((w/N)*.6+(pd/N)*.2+(rank==1?.25:rank<=3?.1:0)+[0,.05,.1,.2][t]);S.fol+=RI(30,150);
   const gf=S.fol-b0,sp=Math.round(S.fol*.3),ex=[5e4,15e4,5e5,4e6][t],ri={stock:R(-.3,.4),crypto:R(-.7,.9),fund:R(.02,.06),home:R(.03,.1)};let ig=0;
@@ -244,7 +288,7 @@ function aging(){
     else if(S.age<=19)S.st[k]=cl(S.st[k]+RI(3,6)+S.hun);
     else if(S.age<=22)S.st[k]=cl(S.st[k]+RI(2,4)+S.hun);
   }
-  S.field=null;
+  S.field=null;worldYear();
 }
 function mkOffers(){
   const rk=S.rank,t=S.tier,o=[{tier:t,n:S.team,c:S.car,tag:'ต่อสัญญา'}],has=(n,tt)=>o.some(x=>x.n===n&&x.tier===tt);
@@ -279,7 +323,7 @@ function lastName(){try{return localStorage.getItem('racer_name')||''}catch(e){r
 function restart(){if(confirm('เริ่มอาชีพใหม่? ข้อมูลเดิมจะหายนะ'))toStart()}
 const seg=(k,o)=>'<div class="seg">'+o.map(([v,l])=>'<button class="'+((S[k]||o[0][0])==v?'on':'')+'" onclick="sub(\''+k+'\',\''+v+'\')">'+l+'</button>').join('')+'</div>';
 const topbar=h=>`<div class="top">${h?`<button onclick="tab('home')">🏠</button>`:''}<div>👥 <b>${nf(S.fol)}</b></div><div>💰 <b>${fmt(S.money)}</b></div></div>`;
-const pr=(i,d,gap)=>`<div class="r ${d.me?'me':''}"><b class="rk r${i<3?i+1:0}">${i+1}</b><span class="hm" style="background:${tc(d.n)}">${code(d.n)}</span><div class="nm"><span>${d.f} ${esc(d.d)}</span><small>${d.n}${d.w?' · 🏆'+d.w:''}</small></div><b class="pp">${gap&&i>0?'<small>-'+gap+' pts</small>':''}${d.p}<small>pts</small></b></div>`;
+const pr=(i,d,gap)=>`<div class="r ${d.me?'me':''}" ${d.me?'':'onclick="pv('+d.wid+')"'}><b class="rk r${i<3?i+1:0}">${i+1}</b><span class="hm" style="background:${tc(d.n)}">${code(d.n)}</span><div class="nm"><span>${d.f} ${esc(d.d)}</span><small>${d.n}${d.w?' · 🏆'+d.w:''}</small></div><b class="pp">${gap&&i>0?'<small>-'+gap+' pts</small>':''}${d.p}<small>pts</small></b></div>`;
 const tr2=(i,x)=>`<div class="r ${x[2]?'me':''}"><b class="rk r${i<3?i+1:0}">${i+1}</b><span class="hm" style="background:${tc(x[0])}">${code(x[0])}</span><div class="nm"><span>${x[0]}</span></div><b class="pp">${x[1]}<small>pts</small></b></div>`;
 const itemsV=ks=>ks.map(k=>`<button onclick="buy('${k}')" ${S.own[k]||S.money<SH[k][2]?'disabled':''}>${SH[k][0]} · ${S.own[k]?'✅ ซื้อแล้ว':fmt(SH[k][2])}<br><small>${SH[k][1]}</small></button>`).join('');
 function invView(){
@@ -289,6 +333,7 @@ function invView(){
 function homeV(){
   const f=sorted(),pos=f.findIndex(d=>d.me)+1,n=NR[S.tier],c=cal()[S.round],L=S.last;
   let h=`<div class="hero"><div class="row2"><span class="chip">● SEASON ${S.c.seasons+1} · ${S.year}</span><span class="box">POS <b>${pos}${ord(pos)}</b></span><span class="box red">OVR <b>${ovr()}</b></span></div><div class="who"><div class="av">🧑</div><div><div class="big">${esc(S.name)} ${FL[S.nat]||''}</div><div><span class="bdg" style="background:${tc(S.team)}">${code(S.team)}</span> ${S.team} · ${T[S.tier].n}</div></div></div><div class="prog"><span>SEASON PROGRESS</span><b>${S.round}/${n}</b></div><div class="bar"><i style="width:${S.round/n*100}%"></i></div></div>`;
+  if(S.news&&S.news.length&&S.round==0)h+='<div class="card"><h2>📰 ข่าววงการ</h2>'+S.news.slice(0,6).map(n=>'<div class="mu" style="margin:6px 0" onclick="pv('+n.id+')">'+n.t+'</div>').join('')+'</div>';
   if(L)h+=`<div class="card"><small>ผลสนามล่าสุด · ${L.r[0]} ${L.gp}</small><h2>${L.pos?'P'+L.pos+' · +'+L.pts+' pts':'DNF'}${L.cash?' · +'+fmt(L.cash):''}</h2><span class="mu">${L.top.map((x,i)=>(i+1)+'. '+(x[2]?'★':'')+esc(x[0])).join(' · ')}</span></div>`;
   h+=`<div class="sec">NEXT RACE</div><div class="card race"><div class="fg">${c[0]}</div><div style="flex:1"><h2>${c[1]}</h2><small>${c[2]} · ROUND ${S.round+1}</small></div><button class="p" style="width:100px;margin:0" onclick="doRace()">🏁 RACE</button></div><button class="s" onclick="simRest()">⏭ ซิมที่เหลือทั้งซีซั่น</button>`;
   h+=`<div class="sec">CHAMPIONSHIP</div><div class="card"><div class="row2"><small>AFTER ${S.round} OF ${n} RACES</small><a onclick="tab('stand')" style="color:var(--ac)">Full standings ›</a></div>${f.slice(0,5).map((d,i)=>pr(i,d,f[0].p-d.p)).join('')}${pos>5?pr(pos-1,f[pos-1],f[0].p-f[pos-1].p):''}</div>`;
@@ -302,8 +347,9 @@ function seasonV(){
   return h+C.map((x,i)=>{const r=S.rr[i];return `<div class="r" style="opacity:${i>S.round?.55:1}${i==S.round?';border-color:var(--ac)':''}"><small>${String(i+1).padStart(2,'0')}</small><span style="font-size:26px">${x[0]}</span><div class="nm"><span>${x[1]}</span><small>${r?ab(S.name)+': '+ps(r.me)+(tm?' · '+ab(tm.d)+': '+ps(r.tm):''):x[2]}</small></div>${r?'✅':i==S.round?'<b style="color:var(--ac)">NEXT</b>':''}</div>`}).join('');
 }
 function standV(){
-  let h=`<h1>Championship</h1><small>After ${S.round} of ${NR[S.tier]} races</small>`+seg('s1',[['ch','Championship'],['hi','History']]);
-  if((S.s1||'ch')=='hi')return h+(S.c.hist.length?S.c.hist.slice().reverse().map(x=>`<div class="r"><span class="nm">${x}</span></div>`).join(''):'<p class="mu">ยังไม่มีประวัติ</p>');
+  let h=`<h1>Championship</h1><small>After ${S.round} of ${NR[S.tier]} races</small>`+seg('s1',[['ch','Championship'],['hi','History'],['hf','🏛 HoF']]);
+  if(S.s1=='hf')return h+hofV();
+  if(S.s1=='hi'){const c=S.c;return h+tro(c.wins,c.pod,c.f1t,c.titles-c.f1t)+(c.hist.length?c.hist.slice().reverse().map(seasL).join(''):'<p class="mu">ยังไม่มีประวัติ</p>')}
   h+=`<div class="card" style="text-align:center"><b>${T[S.tier].n.toUpperCase()}</b></div>`+seg('s2',[['rd','Riders'],['tm','Teams']]);
   return h+((S.s2||'rd')=='tm'?teams().map((x,i)=>tr2(i,x)).join(''):sorted().map((d,i)=>pr(i,d,0)).join(''));
 }
@@ -324,7 +370,7 @@ function riderV(){
   const pos=sorted().findIndex(d=>d.me)+1,me=S.field.find(d=>d.me),c=S.c;
   let h=`<div class="hero"><small>RIDER PROFILE</small><div class="big">${FL[S.nat]||''} ${esc(S.name)}</div><div><span class="bdg" style="background:${tc(S.team)}">${code(S.team)}</span> ${S.team}</div><small>${T[S.tier].n} · ${S.year} · season ${c.seasons+1}${S.aka?' · “'+S.aka+'”':''}</small><div class="row2" style="margin-top:10px"><div><b>${ovr()}</b><small> OVERALL</small></div><div><b>${S.age}</b><small> AGE</small></div><div><b>P${pos}</b><small> POSITION</small></div><div><b>${me.p}</b><small> POINTS</small></div></div></div>`+seg('rt',[['dv','💪 Development'],['cr','🏆 Career']]);
   if((S.rt||'dv')=='dv')return h+`<div class="card"><div class="row2"><h2>RIDER DEVELOPMENT</h2><b style="color:var(--gn)">${fmt(S.money)}</b></div>`+Object.keys(SK).map(k=>{const v=S.st[k],cs=dcost(v);return `<div class="sk"><div class="ic">${SK[k][1]}</div><div class="mid"><div class="row2"><span>${SK[k][0]}</span><b>${v}</b></div><div class="bar"><i style="width:${v}%"></i></div></div><button onclick="develop('${k}')" ${S.money<cs||v>=99?'disabled':''}>⬆<br>${fmt(cs)}</button></div>`}).join('')+`<div class="row2"><span>OVERALL</span><div class="bar" style="margin:0 10px"><i style="width:${ovr()}%"></i></div><b>${ovr()}</b></div></div>`;
-  return h+`<div class="card"><h2>CAREER</h2><span class="mu">ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม<br>ชนะ ${c.wins} · โพเดียม ${c.pod} · แต้มรวม ${c.pts}<br>แชมป์ ${c.titles} สมัย (F1: ${c.f1t}) · อันดับดีที่สุด ${c.best==99?'-':c.best}</span></div>`+c.hist.slice().reverse().map(x=>`<div class="r"><span class="nm">${x}</span></div>`).join('');
+  return h+tro(c.wins,c.pod,c.f1t,c.titles-c.f1t)+`<div class="card"><span class="mu">ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม · แต้มรวม ${c.pts} · อันดับดีที่สุด ${c.best==99?'-':c.best}</span></div>`+c.hist.slice().reverse().map(seasL).join('');
 }
 function offV(){
   const f=sorted(),rk=S.rank,fi=S.fin,iv=Object.keys(S.inv).filter(k=>S.inv[k]);
@@ -345,12 +391,13 @@ function wheelV(){
 function endV(){
   const c=S.c,iv=Object.values(S.inv).reduce((a,b)=>a+b,0);
   const t=c.f1t>=3?'ตำนานแห่งสนามแข่ง':c.f1t>=1?'แชมป์โลก':c.maxTier==3&&c.wins>0?'ผู้ชนะระดับ F1':c.maxTier==3?'นักขับ F1':'นักขับอาชีพ';
-  return `<h1>🏁 จบอาชีพ</h1><div class="card"><h2>${esc(S.name)} · ${t}</h2>${S.aka?'<b>“'+S.aka+'”</b> <span class="mu">'+AK[S.aka][0]+'</span><br>':''}<span class="mu">เลิกแข่งตอนอายุ ${S.age} เพราะ ${S.rsn?S.rsn+' ('+RT[S.rsn]+')':'-'}</span><br><br>สัญชาติ ${S.nat||'-'} · ลีกสูงสุด ${T[c.maxTier].n}<br>ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม<br>ชนะ ${c.wins} · โพเดียม ${c.pod} · แต้มรวม ${c.pts}<br>แชมป์ ${c.titles} สมัย (F1: ${c.f1t})<br>ผู้ติดตาม ${nf(S.fol)} · ทรัพย์สินรวม ${fmt(S.money+iv)}<br>อันดับดีที่สุด ${c.best==99?'-':c.best}${S.rival?'<br>คู่แข่ง '+S.rival+': คุณชนะเขา '+S.beat+' ซีซั่น':''}</div><div class="card"><h2>ประวัติรายปี</h2>${c.hist.map(x=>'<div class="mu">'+x+'</div>').join('')}</div><button class="p" onclick="toStart()">เริ่มอาชีพใหม่</button>`;
+  return `<h1>🏁 จบอาชีพ</h1><div class="card"><h2>${esc(S.name)} · ${t}</h2>${S.aka?'<b>“'+S.aka+'”</b> <span class="mu">'+AK[S.aka][0]+'</span><br>':''}<span class="mu">เลิกแข่งตอนอายุ ${S.age} เพราะ ${S.rsn?S.rsn+' ('+RT[S.rsn]+')':'-'}</span><br><br>สัญชาติ ${S.nat||'-'} · ลีกสูงสุด ${T[c.maxTier].n}<br>ซีซั่น ${c.seasons} · แข่ง ${c.races} สนาม<br>ชนะ ${c.wins} · โพเดียม ${c.pod} · แต้มรวม ${c.pts}<br>แชมป์ ${c.titles} สมัย (F1: ${c.f1t})<br>ผู้ติดตาม ${nf(S.fol)} · ทรัพย์สินรวม ${fmt(S.money+iv)}<br>อันดับดีที่สุด ${c.best==99?'-':c.best}${S.rival?'<br>คู่แข่ง '+S.rival+': คุณชนะเขา '+S.beat+' ซีซั่น':''}</div>${S.inHof?'<div class="card" style="border-color:var(--gd)"><h2>🏛 เข้าสู่ Hall of Fame!</h2></div>':''}${tro(c.wins,c.pod,c.f1t,c.titles-c.f1t)}<div class="card"><h2>ประวัติรายปี</h2></div>${c.hist.slice().reverse().map(seasL).join('')}<button class="p" onclick="toStart()">เริ่มอาชีพใหม่</button>`;
 }
 function startV(){return `<h1>🏎️ Journey to F1</h1><p class="mu">เริ่มขับตอนอายุ 15 หมุนวงล้อโชคชะตา อัปเกรดนักแข่งและรถ หาสปอนเซอร์ แล้วไต่จาก F4 สู่ F1 ให้ได้</p><div class="card"><label class="mu" for="nm">ตั้งชื่อนักแข่งของคุณ</label><input id="nm" maxlength="20" placeholder="เช่น P.Pholmark" value="${esc(lastName())}" autocomplete="off"><label class="mu" for="nt" style="display:block;margin-top:12px">สัญชาติ</label><select id="nt">${Object.keys(FL).map(k=>`<option value="${k}" ${k==lastNat()?'selected':''}>${FL[k]} ${k}</option>`).join('')}</select></div><button class="p" onclick="startNew()">เริ่มอาชีพใหม่</button>`}
 function render(){
   const a=document.getElementById('app');
   if(!S){a.innerHTML=startV();return}
+  if(S.pv!=null&&!S.ph.startsWith('w:')&&S.ph!='end'){a.innerHTML=topbar(0)+profV();return}
   const p=S.ph;let h='';
   if(p.startsWith('w:'))h=wheelV();
   else if(p=='end')h=endV();
@@ -362,7 +409,7 @@ function render(){
   }
   a.innerHTML=h;
 }
-S=load();render();
+S=load();if(S&&!S.D)initWorld();render();
 </script>
 </body>
 </html>
